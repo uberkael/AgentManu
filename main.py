@@ -1,4 +1,5 @@
 # %%
+import argparse
 import os
 
 from dotenv import load_dotenv
@@ -11,6 +12,24 @@ from langchain_core.runnables import RunnableMap
 from rich.console import Console
 from rich.markdown import Markdown
 
+
+# Argparse
+parser = argparse.ArgumentParser(
+	prog="AgentManu",
+	description="Manual AI Agent Helper for Unix",
+	epilog="Tested on Arch Linux")
+parser.add_argument(
+	'-l', "-lang", "-i", "--idiom", "--language",
+	dest='lang',
+	help='Output Language',
+	default='spanish')
+parser.add_argument('cmd_list', nargs=argparse.REMAINDER, help='Command to explain')
+
+args = parser.parse_args()
+lang = args.lang.capitalize()
+cmd = ' '.join(args.cmd_list)
+# print(f"Idioma: {lang}")
+# print(f"Comando: {cmd}")
 
 # load .env file
 load_dotenv()
@@ -62,9 +81,6 @@ chain = (
 	| llm
 )
 
-
-cmd = "ps aux"
-lang = "spanish"
 console = Console()
 
 tokens = []
