@@ -1,5 +1,4 @@
 #!/usr/bin/env -S uv run --script
-# %%
 import argparse
 import os
 import shutil
@@ -9,8 +8,10 @@ import time
 from dotenv import load_dotenv
 
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_groq import ChatGroq
-from langchain_core.prompts import SystemMessagePromptTemplate, HumanMessagePromptTemplate, ChatPromptTemplate
+from langchain_core.prompts import (
+	SystemMessagePromptTemplate,
+	HumanMessagePromptTemplate,
+	ChatPromptTemplate)
 from langchain_core.runnables import RunnableMap
 
 from rich.console import Console
@@ -35,14 +36,9 @@ parser.add_argument(
 args = parser.parse_args()
 lang = args.lang.capitalize()
 cmd = ' '.join(args.cmd_list)
-# print(f"Idioma: {lang}")
-# print(f"Comando: {cmd}")
 
-# load .env file
+# Load .env file
 load_dotenv()
-
-groq_key = os.getenv("GROQ_API_KEY")
-chat_groq = ChatGroq(api_key=groq_key, model="llama-3.1-8b-instant")  # type: ignore
 
 google_key = os.getenv("GOOGLE_API_KEY")
 chat_google = ChatGoogleGenerativeAI(
@@ -50,7 +46,6 @@ chat_google = ChatGoogleGenerativeAI(
 
 llm = chat_google
 
-# %%
 system_prompt = SystemMessagePromptTemplate.from_template(
 	"""You are an AI assistant that explains Unix commands in {lang}.
 Your answers must be accurate, minimal, and clear.
@@ -65,7 +60,8 @@ Ensure the command and output appear **together in the same code block**,
 and that the Markdown syntax is complete and properly closed.
 Do not include '$', '#', or any other symbols before the command or output.
 
-Do not include any extra commentary, greetings, or explanations outside of that.""",
+Do not include any extra commentary, greetings, or explanations outside of that.
+""",
 	input_variables=["lang"]
 )
 
@@ -81,7 +77,6 @@ chat_prompt = ChatPromptTemplate.from_messages(
 		user_prompt
 	]
 )
-# filled_prompt = chat_prompt.format(cmd="Cayo Mario", lang="spanish")
 
 chain = (
 	RunnableMap({
@@ -108,20 +103,20 @@ time.sleep(0.4)
 print()
 print("-" * terminal_width)
 
-# Calcular líneas visuales según ancho de terminal
+# Calculate visual lines according to terminal width
 for line in current_line.splitlines() or [""]:
-	# Si es más largo que el ancho, se envuelve
+	# If it's longer than the width, it wraps
 	wrapped_lines = (len(line) // terminal_width) + 1
 	printed_lines += wrapped_lines
 printed_lines += 1  # Terminal Prompt
 
-# Borrar cada línea visual
+# Erase each visual line
 for _ in range(printed_lines):
 	sys.stdout.write("\033[F")  # Cursor up
 	sys.stdout.write("\033[K")  # Clear line
 sys.stdout.flush()
 
-# Mostrar resultado final en Markdown
+# Show final result in Markdown
 token_markdown = "".join(token.content for token in tokens)  # type: ignore
 markdown = Markdown(token_markdown)
 console.print(markdown)
