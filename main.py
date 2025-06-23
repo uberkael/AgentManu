@@ -2,6 +2,7 @@
 # %%
 import argparse
 import os
+import shutil
 import sys
 import time
 
@@ -59,8 +60,9 @@ when to use it.
 If the command contains multiple parts or arguments,
 briefly explain the purpose of each one.
 If useful, add **one concise code block example**, also in
-Markdown, showing the command and the expected output
-(1-2 lines max, use ellipsis `...` if needed).
+Markdown, showing the command and the expected output.
+Make sure this examples are all in the same block of code and make it as compact
+as posible (1-2 lines max) and not beyond 80 characters width.
 Do not include any extra information or greetings.""",
 	input_variables=["lang"])
 
@@ -88,33 +90,34 @@ chain = (
 )
 
 console = Console()
-
 tokens = []
-
+terminal_width = shutil.get_terminal_size((80, 20)).columns
 printed_lines = 0
 current_line = ""
 
 for token in chain.stream({"cmd": cmd, "lang": lang}):
 	tokens.append(token)
-	print(token.content, end="", flush=True)
-	current_line += token.content  # type: ignore
-	if "\n" in token.content:
-		printed_lines += current_line.count("\n")
-		current_line = ""
+	content = token.content
+	print(content, end="", flush=True)
+	current_line += content  # type: ignore
 
-# Asegurar contar al menos una línea
-printed_lines += 2
-time.sleep(0.5)
+time.sleep(1)
+print()
+print("-" * terminal_width)
 
-# Mover cursor hacia arriba y borrar líneas una por una
-for _ in range(printed_lines):
-	# Move cursor up one line
-	sys.stdout.write("\033[F")
-	# Clear the line
-	sys.stdout.write("\033[K")
-sys.stdout.flush()
+# Calcular líneas visuales según ancho de terminal
+# for line in current_line.splitlines() or [""]:
+# 	# Si es más largo que el ancho, se envuelve
+# 	wrapped_lines = (len(line) // terminal_width) + 1
+# 	printed_lines += wrapped_lines
+# printed_lines -= 1  # Terminal Prompt
 
-# Imprimir con Markdown
+# # Borrar cada línea visual
+# for _ in range(printed_lines):
+# 	sys.stdout.write("\033[F")  # Cursor up
+# 	sys.stdout.write("\033[K")  # Clear line
+# sys.stdout.flush()
+
+# Mostrar resultado final en Markdown
 for token in tokens:
-	render_markup = Markdown(token.content)  # type: ignore
-	console.print(render_markup)
+	console.print(Markdown(token.content))  # type: ignore
