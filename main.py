@@ -36,7 +36,8 @@ parser.add_argument(
 
 args = parser.parse_args()
 lang = args.lang.capitalize()
-cmd = ' '.join(args.cmd_list)
+cmd_args = len(args.cmd_list) > 1
+cmd = ' '.join(args.cmd_list) if cmd_args else args.cmd_list[0]
 
 # Load .env file
 load_dotenv()
@@ -47,24 +48,48 @@ chat_google = ChatGoogleGenerativeAI(
 
 llm = chat_google
 
-system_prompt = SystemMessagePromptTemplate.from_template(
+system_prompt_single = SystemMessagePromptTemplate.from_template(
 	"""You are an AI assistant that explains Unix commands in {lang}.
-Your answers must be accurate, minimal, and clear.
+Your responses must be accurate, minimal, and clear.
+
+Follow the style of TLDR pages, tealdeer or similar tools:
+
+- Describe the general purpose of the command (2-3 sentences max).
+
+- Show minimal usage or syntax of different uses (2-6 sentences max).
+
+Do not include '$', '#', or any other symbols before the command or output.
+Avoid extra commentary, greetings, or formatting outside the Markdown.""",
+	input_variables=["lang"]
+)
+
+system_prompt_args = SystemMessagePromptTemplate.from_template(
+	"""You are an AI assistant that explains Unix commands in {lang}.
+Your responses must be accurate, minimal, and clear.
+
+If the command has no arguments, follow the style of TLDR pages:
+
+- Describe the general purpose of the command (2-3 sentences max).
+
+- Show minimal usage or syntax of different uses.
+
+In case of commands with arguments, follow this style:
 Respond with a **very short** paragraph (2-3 sentences max),
 formatted in Markdown, that explains what the command does and when to use it.
-If the command contains multiple parts or arguments, briefly explain each part.
-If helpful, include **a single compact code block example**, also in Markdown.
+If the command includes multiple parts or arguments, briefly explain each part.
 
-The code block should contain both the command and its expected output,
+If helpful, include **a single compact code block example**, also in Markdown.
+The code block should include both the command and its expected output,
 all within **1-2 lines** and **no more than 80 characters wide**.
 Ensure the command and output appear **together in the same code block**,
 and that the Markdown syntax is complete and properly closed.
-Do not include '$', '#', or any other symbols before the command or output.
 
-Do not include any extra commentary, greetings, or explanations outside of that.
-""",
+Do not include '$', '#', or any other symbols before the command or output.
+Avoid extra commentary, greetings, or formatting outside the Markdown.""",
 	input_variables=["lang"]
 )
+
+system_prompt = system_prompt_args if cmd_args else system_prompt_single
 
 user_prompt = HumanMessagePromptTemplate.from_template(
 	"""Follow the previous instructions strictly.
@@ -108,7 +133,7 @@ for line in current_line.splitlines() or [""]:
 	# If it's longer than the width, it wraps
 	wrapped_lines = (len(line) // terminal_width) + 1
 	printed_lines += wrapped_lines
-printed_lines -= 1  # Terminal Prompt + Spinner
+# printed_lines += 4  # Terminal Prompt + Spinner
 
 # Erase each visual line
 for _ in range(printed_lines):
