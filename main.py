@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
 from langchain_core.prompts import SystemMessagePromptTemplate, HumanMessagePromptTemplate, ChatPromptTemplate
-from langchain_core.runnables import RunnableLambda, RunnableMap
+from langchain_core.runnables import RunnableMap
 
 
 # load .env file
@@ -22,11 +22,13 @@ llm = chat_google
 
 # %%
 system_prompt = SystemMessagePromptTemplate.from_template(
-	"""You are a AI assistant that helps generating very accurate explanations
-	for unix commands in {lang}.
-	The response need to be simple but complete.
-	And it should be a single paragraph of explanation followed (if necessary)
-	by a simple example.""",
+	"""You are an AI assistant that explains Unix commands in {lang}.
+Your answers must be accurate, minimal, and clear.
+Respond with a **very short** paragraph (2-3 sentences max)
+that explains what the command does and when to use it.
+If useful, add **one short example** on a new line,
+including the expected output if relevant.
+Do not include any extra information or greetings.""",
 	input_variables=["lang"])
 
 user_prompt = HumanMessagePromptTemplate.from_template(
@@ -44,14 +46,17 @@ chat_prompt = ChatPromptTemplate.from_messages(
 
 chain = (
 	RunnableMap({
-		"cmd": lambda x: x["topic"],
+		"cmd": lambda x: x["cmd"],
 		"lang": lambda x: x["lang"]
 	})
 	| chat_prompt
 	| llm
 )
 
+
+cmd = "ls -l"
+lang = "spanish"
 tokens = []
-for token in chain.stream({"topic": "ls -l", "lang": "spanish"}):
+for token in chain.stream({"cmd": cmd, "lang": lang}):
 	tokens.append(token)
 	print(token.content, end="", flush=True)
