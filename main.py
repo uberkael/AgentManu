@@ -27,14 +27,16 @@ llm = chat_google
 # %%
 system_prompt = SystemMessagePromptTemplate.from_template(
 	"""You are an AI assistant that explains Unix commands in {lang}.
-	Your answers must be accurate, minimal, and clear.
-	Respond with a **very short** paragraph (2-3 sentences max),
-	formatted in Markdown, that explains what the command does
-	and when to use it.
-	If useful, add **one concise code block example**, also in
-	Markdown, showing the command and the expected output
-	(1-3 sentences max, use ellipsis `...` if needed).
-	Do not include any extra information or greetings.""",
+Your answers must be accurate, minimal, and clear.
+Respond with a **very short** paragraph (2-3 sentences max),
+formatted in Markdown, that explains what the command does and
+when to use it.
+If the command contains multiple parts or arguments,
+briefly explain the purpose of each one.
+If useful, add **one concise code block example**, also in
+Markdown, showing the command and the expected output
+(1-2 lines max, use ellipsis `...` if needed).
+Do not include any extra information or greetings.""",
 	input_variables=["lang"])
 
 user_prompt = HumanMessagePromptTemplate.from_template(
@@ -53,8 +55,8 @@ chat_prompt = ChatPromptTemplate.from_messages(
 
 chain = (
 	RunnableMap({
-		"cmd": lambda x: x["cmd"],
-		"lang": lambda x: x["lang"]
+		"cmd": lambda x: x["cmd"],  # type: ignore
+		"lang": lambda x: x["lang"]  # type: ignore
 	})
 	| chat_prompt
 	| llm
@@ -68,6 +70,6 @@ console = Console()
 tokens = []
 for token in chain.stream({"cmd": cmd, "lang": lang}):
 	tokens.append(token)
-	render_markup = Markdown(token.content)
+	render_markup = Markdown(token.content)  # type: ignore
 	console.print(render_markup)
 	# print(token.content, end="", flush=True)
