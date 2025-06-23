@@ -23,7 +23,10 @@ parser.add_argument(
 	dest='lang',
 	help='Output Language',
 	default='spanish')
-parser.add_argument('cmd_list', nargs=argparse.REMAINDER, help='Command to explain')
+parser.add_argument(
+	'cmd_list',
+	nargs=argparse.REMAINDER,
+	help='Command to explain')
 
 args = parser.parse_args()
 lang = args.lang.capitalize()
@@ -86,6 +89,9 @@ console = Console()
 tokens = []
 for token in chain.stream({"cmd": cmd, "lang": lang}):
 	tokens.append(token)
+	print(token.content, end="", flush=True)
+
+# result = chain.invoke({"cmd": cmd, "lang": lang})
+for token in tokens:
 	render_markup = Markdown(token.content)  # type: ignore
 	console.print(render_markup)
-	# print(token.content, end="", flush=True)
