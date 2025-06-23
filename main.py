@@ -100,15 +100,13 @@ for token in chain.stream({"cmd": cmd, "lang": lang}):
 	current_line += content  # type: ignore
 
 time.sleep(0.4)
-print()
-print("-" * terminal_width)
 
 # Calculate visual lines according to terminal width
 for line in current_line.splitlines() or [""]:
 	# If it's longer than the width, it wraps
 	wrapped_lines = (len(line) // terminal_width) + 1
 	printed_lines += wrapped_lines
-printed_lines += 1  # Terminal Prompt
+printed_lines -= 1  # Terminal Prompt
 
 # Erase each visual line
 for _ in range(printed_lines):
