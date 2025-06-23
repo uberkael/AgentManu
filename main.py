@@ -2,6 +2,8 @@
 # %%
 import argparse
 import os
+import sys
+import time
 
 from dotenv import load_dotenv
 
@@ -39,7 +41,7 @@ cmd = ' '.join(args.cmd_list)
 load_dotenv()
 
 groq_key = os.getenv("GROQ_API_KEY")
-chat_groq = ChatGroq(api_key=groq_key, model="llama-3.1-8b-instant")
+chat_groq = ChatGroq(api_key=groq_key, model="llama-3.1-8b-instant")  # type: ignore
 
 google_key = os.getenv("GOOGLE_API_KEY")
 chat_google = ChatGoogleGenerativeAI(
@@ -88,11 +90,31 @@ chain = (
 console = Console()
 
 tokens = []
+
+printed_lines = 0
+current_line = ""
+
 for token in chain.stream({"cmd": cmd, "lang": lang}):
 	tokens.append(token)
 	print(token.content, end="", flush=True)
+	current_line += token.content  # type: ignore
+	if "\n" in token.content:
+		printed_lines += current_line.count("\n")
+		current_line = ""
 
-# result = chain.invoke({"cmd": cmd, "lang": lang})
+# Asegurar contar al menos una línea
+printed_lines += 2
+time.sleep(0.5)
+
+# Mover cursor hacia arriba y borrar líneas una por una
+for _ in range(printed_lines):
+	# Move cursor up one line
+	sys.stdout.write("\033[F")
+	# Clear the line
+	sys.stdout.write("\033[K")
+sys.stdout.flush()
+
+# Imprimir con Markdown
 for token in tokens:
 	render_markup = Markdown(token.content)  # type: ignore
 	console.print(render_markup)
