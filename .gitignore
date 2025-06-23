@@ -10,4 +10,6 @@ wheels/
 .venv
 
 # Files
+.env
 .python-version
+uv.lock
