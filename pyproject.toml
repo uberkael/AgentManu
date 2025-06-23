@@ -10,4 +10,5 @@ dependencies = [
 	"langchain-google-genai>=2.1.5",
 	"langchain-groq>=0.3.2",
 	"python-dotenv>=1.1.0",
+	"rich>=14.0.0",
 ]

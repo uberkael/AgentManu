@@ -2,10 +2,14 @@
 import os
 
 from dotenv import load_dotenv
+
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_groq import ChatGroq
 from langchain_core.prompts import SystemMessagePromptTemplate, HumanMessagePromptTemplate, ChatPromptTemplate
 from langchain_core.runnables import RunnableMap
+
+from rich.console import Console
+from rich.markdown import Markdown
 
 
 # load .env file
@@ -54,9 +58,13 @@ chain = (
 )
 
 
-cmd = "ls -l"
+cmd = "ps aux"
 lang = "spanish"
+console = Console()
+
 tokens = []
 for token in chain.stream({"cmd": cmd, "lang": lang}):
 	tokens.append(token)
-	print(token.content, end="", flush=True)
+	render_markup = Markdown(token.content)
+	console.print(render_markup)
+	# print(token.content, end="", flush=True)
