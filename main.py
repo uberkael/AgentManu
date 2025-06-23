@@ -55,16 +55,19 @@ system_prompt = SystemMessagePromptTemplate.from_template(
 	"""You are an AI assistant that explains Unix commands in {lang}.
 Your answers must be accurate, minimal, and clear.
 Respond with a **very short** paragraph (2-3 sentences max),
-formatted in Markdown, that explains what the command does and
-when to use it.
-If the command contains multiple parts or arguments,
-briefly explain the purpose of each one.
-If useful, add **one concise code block example**, also in
-Markdown, showing the command and the expected output.
-Make sure this examples are all in the same block of code and make it as compact
-as posible (1-2 lines max) and not beyond 80 characters width.
-Do not include any extra information or greetings.""",
-	input_variables=["lang"])
+formatted in Markdown, that explains what the command does and when to use it.
+If the command contains multiple parts or arguments, briefly explain each part.
+If helpful, include **a single compact code block example**, also in Markdown.
+
+The code block should contain both the command and its expected output,
+all within **1-2 lines** and **no more than 80 characters wide**.
+Ensure the command and output appear **together in the same code block**,
+and that the Markdown syntax is complete and properly closed.
+Do not include '$', '#', or any other symbols before the command or output.
+
+Do not include any extra commentary, greetings, or explanations outside of that.""",
+	input_variables=["lang"]
+)
 
 user_prompt = HumanMessagePromptTemplate.from_template(
 	"""Follow the previous instructions strictly.
@@ -101,23 +104,24 @@ for token in chain.stream({"cmd": cmd, "lang": lang}):
 	print(content, end="", flush=True)
 	current_line += content  # type: ignore
 
-time.sleep(1)
+time.sleep(0.4)
 print()
 print("-" * terminal_width)
 
 # Calcular líneas visuales según ancho de terminal
-# for line in current_line.splitlines() or [""]:
-# 	# Si es más largo que el ancho, se envuelve
-# 	wrapped_lines = (len(line) // terminal_width) + 1
-# 	printed_lines += wrapped_lines
-# printed_lines -= 1  # Terminal Prompt
+for line in current_line.splitlines() or [""]:
+	# Si es más largo que el ancho, se envuelve
+	wrapped_lines = (len(line) // terminal_width) + 1
+	printed_lines += wrapped_lines
+printed_lines += 1  # Terminal Prompt
 
-# # Borrar cada línea visual
-# for _ in range(printed_lines):
-# 	sys.stdout.write("\033[F")  # Cursor up
-# 	sys.stdout.write("\033[K")  # Clear line
-# sys.stdout.flush()
+# Borrar cada línea visual
+for _ in range(printed_lines):
+	sys.stdout.write("\033[F")  # Cursor up
+	sys.stdout.write("\033[K")  # Clear line
+sys.stdout.flush()
 
 # Mostrar resultado final en Markdown
-for token in tokens:
-	console.print(Markdown(token.content))  # type: ignore
+token_markdown = "".join(token.content for token in tokens)  # type: ignore
+markdown = Markdown(token_markdown)
+console.print(markdown)
