@@ -50,7 +50,7 @@ llm = chat_google
 
 system_prompt_single = SystemMessagePromptTemplate.from_template(
 	"""You are an AI assistant that explains Unix commands in {lang}.
-Your responses must be accurate, minimal, and clear.
+Your responses must be accurate, minimal, and clear with very rich Markdown.
 
 Follow the style of TLDR pages, tealdeer or similar tools:
 
@@ -65,7 +65,7 @@ Avoid extra commentary, greetings, or formatting outside the Markdown.""",
 
 system_prompt_args = SystemMessagePromptTemplate.from_template(
 	"""You are an AI assistant that explains Unix commands in {lang}.
-Your responses must be accurate, minimal, and clear.
+Your responses must be accurate, minimal, and clear with very rich Markdown.
 
 If the command has no arguments, follow the style of TLDR pages:
 
@@ -75,7 +75,7 @@ If the command has no arguments, follow the style of TLDR pages:
 
 In case of commands with arguments, follow this style:
 Respond with a **very short** paragraph (2-3 sentences max),
-formatted in Markdown, that explains what the command does and when to use it.
+formatted in Markdown (very rich), that explains what the command does and when to use it.
 If the command includes multiple parts or arguments, briefly explain each part.
 
 If helpful, include **a single compact code block example**, also in Markdown.
