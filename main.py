@@ -1,8 +1,6 @@
 #!/usr/bin/env -S uv run --script
 import argparse
 import os
-import shutil
-import sys
 import time
 
 from dotenv import load_dotenv
@@ -41,6 +39,8 @@ cmd = ' '.join(args.cmd_list) if cmd_args else args.cmd_list[0]
 
 # Load .env file
 load_dotenv()
+console = Console()
+console.file.write("\033[s")  # Save cursor terminal position
 
 google_key = os.getenv("GOOGLE_API_KEY")
 chat_google = ChatGoogleGenerativeAI(
@@ -113,33 +113,19 @@ chain = (
 	| llm
 )
 
-console = Console()
 tokens = []
-terminal_width = shutil.get_terminal_size((80, 20)).columns
-printed_lines = 0
-current_line = ""
 
 with Status("", spinner="bouncingBar", spinner_style="green") as status:
 	for token in chain.stream({"cmd": cmd, "lang": lang}):
 		tokens.append(token)
 		content = token.content
 		print(content, end="", flush=True)
-		current_line += content  # type: ignore
 
 time.sleep(0.4)
 
-# Calculate visual lines according to terminal width
-for line in current_line.splitlines() or [""]:
-	# If it's longer than the width, it wraps
-	wrapped_lines = (len(line) // terminal_width) + 1
-	printed_lines += wrapped_lines
-# printed_lines += 4  # Terminal Prompt + Spinner
-
-# Erase each visual line
-for _ in range(printed_lines):
-	sys.stdout.write("\033[F")  # Cursor up
-	sys.stdout.write("\033[K")  # Clear line
-sys.stdout.flush()
+console.file.write("\033[u")  # Restore cursor position
+console.file.write("\033[J")  # Clear from cursor down
+console.file.flush()
 
 # Show final result in Markdown
 token_markdown = "".join(token.content for token in tokens)  # type: ignore
