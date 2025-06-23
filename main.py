@@ -27,17 +27,20 @@ llm = chat_google
 # %%
 system_prompt = SystemMessagePromptTemplate.from_template(
 	"""You are an AI assistant that explains Unix commands in {lang}.
-Your answers must be accurate, minimal, and clear.
-Respond with a **very short** paragraph (2-3 sentences max)
-that explains what the command does and when to use it.
-If useful, add **one short example** on a new line,
-including the expected output if relevant.
-Do not include any extra information or greetings.""",
+	Your answers must be accurate, minimal, and clear.
+	Respond with a **very short** paragraph (2-3 sentences max),
+	formatted in Markdown, that explains what the command does
+	and when to use it.
+	If useful, add **one concise code block example**, also in
+	Markdown, showing the command and the expected output
+	(1-3 sentences max, use ellipsis `...` if needed).
+	Do not include any extra information or greetings.""",
 	input_variables=["lang"])
 
 user_prompt = HumanMessagePromptTemplate.from_template(
-	"""Generate a paragraph explaining the following command {cmd}
-	(and nothing more).""",
+	"""Follow the previous instructions strictly.
+Explain the following Unix command: `{cmd}`.
+Do not add anything else beyond the explanation and example.""",
 	input_variables=["cmd"])
 
 chat_prompt = ChatPromptTemplate.from_messages(
