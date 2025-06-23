@@ -16,6 +16,7 @@ from langchain_core.runnables import RunnableMap
 
 from rich.console import Console
 from rich.markdown import Markdown
+from rich.status import Status
 
 
 # Argparse
@@ -93,11 +94,12 @@ terminal_width = shutil.get_terminal_size((80, 20)).columns
 printed_lines = 0
 current_line = ""
 
-for token in chain.stream({"cmd": cmd, "lang": lang}):
-	tokens.append(token)
-	content = token.content
-	print(content, end="", flush=True)
-	current_line += content  # type: ignore
+with Status("[bold green]", spinner="dots", spinner_style="green") as status:
+	for token in chain.stream({"cmd": cmd, "lang": lang}):
+		tokens.append(token)
+		content = token.content
+		print(content, end="", flush=True)
+		current_line += content  # type: ignore
 
 time.sleep(0.4)
 
@@ -106,7 +108,7 @@ for line in current_line.splitlines() or [""]:
 	# If it's longer than the width, it wraps
 	wrapped_lines = (len(line) // terminal_width) + 1
 	printed_lines += wrapped_lines
-printed_lines -= 1  # Terminal Prompt
+printed_lines += 2  # Terminal Prompt + Spinner
 
 # Erase each visual line
 for _ in range(printed_lines):
