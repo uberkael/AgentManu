@@ -118,21 +118,22 @@ tokens = []
 content = ""
 
 with Status("", spinner="bouncingBar", spinner_style="green") as status:
-	# Esperar el primer token (sin actualizar Live aún)
+	# Wait for the first token (do not update Live yet)
 	first_token = next(chain.stream({"cmd": cmd, "lang": lang}))
 	tokens.append(first_token)
-	content += first_token.content  # type: ignore
+	content += f"{first_token.content} █"  # type: ignore
 
-# 2. Cerrar el spinner y continuar con Live para el resto del stream
+# Close the spinner and continue with Live for the rest of the stream
 with Live(Text(content), console=console, transient=True) as live:
 	for token in chain.stream({"cmd": cmd, "lang": lang}):
 		tokens.append(token)
-		content += token.content  # type: ignore
+		content = content.rstrip('█')
+		content += f"{token.content} █"  # type: ignore
 		live.update(Text(content))
-	time.sleep(0.4)  # Pequeña pausa al final
-
+	content = content.rstrip('█')
+	live.update(Text(content))
+	time.sleep(0.4)  # Pause at the end
 
 # Show final result in Markdown
-token_markdown = "".join(token.content for token in tokens)  # type: ignore
-markdown = Markdown(token_markdown)
-console.print(markdown)
+content_markdown = Markdown(content)
+console.print(content_markdown)
