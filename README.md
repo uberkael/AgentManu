@@ -7,7 +7,11 @@ in human-friendly terms. \
 Similar to `tldr` but smarter and more flexible.
 
 ~~Powered by Google Gemini 2.5 (easily swappable for other models).~~
-Powered by Groq (Llama 4) or Google Gemini 2.5.
+The AI model will be selected based on the available API keys in the `.env` file.
+(Providers:
+[Groq](https://groq.com/),
+[Celebra](https://celebra.ai/),
+[Google Gemini](https://ai.google.dev/gemini/))
 
 ## Features
 
@@ -21,12 +25,16 @@ Powered by Groq (Llama 4) or Google Gemini 2.5.
 
 It use [`uv`](https://github.com/astral-sh/uv) as project manager.
 
+The model will be selected based on the available API keys in the `.env` file.
+In order Groq > Celebra > Google Gemini.
 Add a `.env` file in the same folder with your API key:
 
 ```bash
-GOOGLE_API_KEY="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-# or
 GROQ_API_KEY="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+# or
+CELEBRAS_API_KEY="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+# or
+GOOGLE_API_KEY="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 ```
 
 ## Installation
