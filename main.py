@@ -33,6 +33,10 @@ parser.add_argument(
 	help='Command to explain')
 
 args = parser.parse_args()
+# Early exit if no command is provided
+if len(args.cmd_list) < 1:
+	parser.print_help()
+	exit(0)
 lang = args.lang.capitalize()
 cmd_args = len(args.cmd_list) > 1
 cmd = ' '.join(args.cmd_list) if cmd_args else args.cmd_list[0]
