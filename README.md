@@ -78,8 +78,12 @@ Launch with `?`:
 
 ![AgentManu](screenshots/use1.png)
 
-Different languages, it can accept any.
+### Different languages, it can accept any.
 ![Languages](screenshots/use2.png)
 
-More examples:
+### More examples:
 ![Examples](screenshots/use3.png)
+
+### Video
+
+![Video](screenshots/2025-06-24_16-47-26.apng)
