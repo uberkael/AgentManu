@@ -7,14 +7,16 @@ from dotenv import load_dotenv
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import (
-	SystemMessagePromptTemplate,
+	ChatPromptTemplate,
 	HumanMessagePromptTemplate,
-	ChatPromptTemplate)
+	SystemMessagePromptTemplate)
 from langchain_core.runnables import RunnableMap
 
 from rich.console import Console
+from rich.live import Live
 from rich.markdown import Markdown
 from rich.status import Status
+from rich.text import Text
 
 
 # Argparse
@@ -40,7 +42,6 @@ cmd = ' '.join(args.cmd_list) if cmd_args else args.cmd_list[0]
 # Load .env file
 load_dotenv()
 console = Console()
-console.file.write("\033[s")  # Save cursor terminal position
 
 google_key = os.getenv("GOOGLE_API_KEY")
 chat_google = ChatGoogleGenerativeAI(
@@ -114,18 +115,22 @@ chain = (
 )
 
 tokens = []
+content = ""
 
 with Status("", spinner="bouncingBar", spinner_style="green") as status:
+	# Esperar el primer token (sin actualizar Live aún)
+	first_token = next(chain.stream({"cmd": cmd, "lang": lang}))
+	tokens.append(first_token)
+	content += first_token.content  # type: ignore
+
+# 2. Cerrar el spinner y continuar con Live para el resto del stream
+with Live(Text(content), console=console, transient=True) as live:
 	for token in chain.stream({"cmd": cmd, "lang": lang}):
 		tokens.append(token)
-		content = token.content
-		print(content, end="", flush=True)
+		content += token.content  # type: ignore
+		live.update(Text(content))
+	time.sleep(0.4)  # Pequeña pausa al final
 
-time.sleep(0.4)
-
-console.file.write("\033[u")  # Restore cursor position
-console.file.write("\033[J")  # Clear from cursor down
-console.file.flush()
 
 # Show final result in Markdown
 token_markdown = "".join(token.content for token in tokens)  # type: ignore
