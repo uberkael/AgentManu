@@ -7,11 +7,16 @@ in human-friendly terms. \
 Similar to `tldr` but smarter and more flexible.
 
 ~~Powered by Google Gemini 2.5 (easily swappable for other models).~~
+
 The AI model will be selected based on the available API keys in the `.env` file.
 (Providers:
 [Groq](https://groq.com/),
 [Celebra](https://celebra.ai/),
 [Google Gemini](https://ai.google.dev/gemini/))
+
+### Video
+
+![Video](screenshots/example.apng)
 
 ## Features
 
@@ -83,7 +88,3 @@ Launch with `?`:
 
 ### More examples:
 ![Examples](screenshots/use3.png)
-
-### Video
-
-![Video](screenshots/2025-06-24_16-47-26.apng)
