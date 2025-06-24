@@ -9,6 +9,7 @@ dependencies = [
 	"langchain-community>=0.3.26",
 	"langchain-google-genai>=2.1.5",
 	"langchain-groq>=0.3.2",
+	"langchain-xai>=0.2.4",
 	"python-dotenv>=1.1.0",
 	"rich>=14.0.0",
 ]

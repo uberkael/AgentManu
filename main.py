@@ -1,11 +1,7 @@
 #!/usr/bin/env -S uv run --script
 import argparse
-import os
 import time
 
-from dotenv import load_dotenv
-
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import (
 	ChatPromptTemplate,
 	HumanMessagePromptTemplate,
@@ -17,6 +13,8 @@ from rich.live import Live
 from rich.markdown import Markdown
 from rich.status import Status
 from rich.text import Text
+
+from model import llm
 
 
 # Argparse
@@ -39,15 +37,7 @@ lang = args.lang.capitalize()
 cmd_args = len(args.cmd_list) > 1
 cmd = ' '.join(args.cmd_list) if cmd_args else args.cmd_list[0]
 
-# Load .env file
-load_dotenv()
 console = Console()
-
-google_key = os.getenv("GOOGLE_API_KEY")
-chat_google = ChatGoogleGenerativeAI(
-	api_key=google_key, model="gemini-2.5-flash")
-
-llm = chat_google
 
 system_prompt_single = SystemMessagePromptTemplate.from_template(
 	"""You are an AI assistant that explains Unix commands in {lang}.
@@ -121,14 +111,14 @@ with Status("", spinner="bouncingBar", spinner_style="green") as status:
 	# Wait for the first token (do not update Live yet)
 	first_token = next(chain.stream({"cmd": cmd, "lang": lang}))
 	tokens.append(first_token)
-	content += f"{first_token.content} █"  # type: ignore
+	content += f"{first_token.content}█"  # type: ignore
 
 # Close the spinner and continue with Live for the rest of the stream
 with Live(Text(content), console=console, transient=True) as live:
 	for token in chain.stream({"cmd": cmd, "lang": lang}):
 		tokens.append(token)
 		content = content.rstrip('█')
-		content += f"{token.content} █"  # type: ignore
+		content += f"{token.content}█"  # type: ignore
 		live.update(Text(content))
 	content = content.rstrip('█')
 	live.update(Text(content))
