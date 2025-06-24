@@ -6,7 +6,8 @@ AgentManu is a minimalist yet powerful AI assistant that explains `Unix` `comman
 in human-friendly terms. \
 Similar to `tldr` but smarter and more flexible.
 
-Powered by **Google Gemini** 2.5 (easily swappable for other models).
+~~Powered by Google Gemini 2.5 (easily swappable for other models).~~
+Powered by Groq (Llama 4) or Google Gemini 2.5.
 
 ## Features
 
@@ -20,10 +21,12 @@ Powered by **Google Gemini** 2.5 (easily swappable for other models).
 
 It use [`uv`](https://github.com/astral-sh/uv) as project manager.
 
-Add a `.env` file in the same folder with your Google API key:
+Add a `.env` file in the same folder with your API key:
 
 ```bash
 GOOGLE_API_KEY="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+# or
+GROQ_API_KEY="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 ```
 
 ## Installation
