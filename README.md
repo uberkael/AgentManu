@@ -2,7 +2,6 @@
 
 ## (AI) Agent Manual Helper for Unix Commands
 
-
 AgentManu is a minimalist yet powerful AI assistant that explains `Unix` `commands`
 in human-friendly terms. \
 Similar to `tldr` but smarter and more flexible.
@@ -20,6 +19,12 @@ Powered by **Google Gemini** 2.5 (easily swappable for other models).
 ## Requirements
 
 It use [`uv`](https://github.com/astral-sh/uv) as project manager.
+
+Add a `.env` file in the same folder with your Google API key:
+
+```bash
+GOOGLE_API_KEY="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+```
 
 ## Installation
 
@@ -57,7 +62,6 @@ Launch with `?`:
 ¿ watch 'ps aux | rg code'
 ...
 ```
-
 
 ## Example Output
 
