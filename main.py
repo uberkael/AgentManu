@@ -1,12 +1,12 @@
 #!/usr/bin/env -S uv run --script
 import argparse
+from argparse import RawTextHelpFormatter
 import time
 
 from langchain_core.prompts import (
 	ChatPromptTemplate,
 	HumanMessagePromptTemplate,
 	SystemMessagePromptTemplate)
-from langchain_core.runnables import RunnableMap
 
 from rich.console import Console
 from rich.live import Live
@@ -19,14 +19,21 @@ from model import llm
 
 # Argparse
 parser = argparse.ArgumentParser(
-	prog="AgentManu",
 	description="Manual AI Agent Helper for Unix",
-	epilog="Tested on Arch Linux")
+	epilog="https://github.com/uberkael/AgentManu\n© Kael <uberkael@gmail.com>",
+	formatter_class=RawTextHelpFormatter,
+	prog="AgentManu")
 parser.add_argument(
 	'-l', "-lang", "-i", "--idiom", "--language",
 	dest='lang',
 	help='Output Language',
 	default='spanish')
+parser.add_argument('-v', '--version',
+	action='version',
+	version="""%(prog)s 1.0\n
+https://github.com/uberkael/AgentManu
+© Kael <uberkael@gmail.com>""",
+	help='Show program version and exit')
 parser.add_argument(
 	'cmd_list',
 	nargs=argparse.REMAINDER,
@@ -69,8 +76,8 @@ If the command has no arguments, follow the style of TLDR pages:
 - Show minimal usage or syntax of different uses.
 
 In case of commands with arguments, follow this style:
-Respond with a **very short** paragraph (2-3 sentences max),
-formatted in Markdown (very rich), that explains what the command does and when to use it.
+Respond with a **very short** paragraph (2-3 sentences max), formatted in
+Markdown (very rich), that explains what the command does and when to use it.
 If the command includes multiple parts or arguments, briefly explain each part.
 
 If helpful, include **a single compact code block example**, also in Markdown.
@@ -100,10 +107,10 @@ chat_prompt = ChatPromptTemplate.from_messages(
 )
 
 chain = (
-	RunnableMap({
-		"cmd": lambda x: x["cmd"],  # type: ignore
-		"lang": lambda x: x["lang"]  # type: ignore
-	})
+	{  # type: ignore
+		"cmd": lambda x: x["cmd"],
+		"lang": lambda x: x["lang"]
+	}
 	| chat_prompt
 	| llm
 )

@@ -83,7 +83,7 @@ Launch with `?`:
 
 ![AgentManu](screenshots/use1.png)
 
-### Different languages, it can accept any.
+### Different languages, it can accept any (depends on the LLM).
 ![Languages](screenshots/use2.png)
 
 ### More examples:

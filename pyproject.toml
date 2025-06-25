@@ -1,6 +1,6 @@
 [project]
 name = "agentmanu"
-version = "0.1.0"
+version = "1.0.0"
 description = "(AI) Agent Manual Helper for Unix Commands"
 readme = "README.md"
 requires-python = ">=3.11"
